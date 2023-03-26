@@ -32,3 +32,14 @@ The structure of the table should be in the follwing format:
 | state | anaerobic | anaerobic  | aerobic  | aerobic | ...
 
 The name of row `state` is important. If you metadata table has a different name, rename it.
+
+## Output
+
+In the outpu folder there will be the following fies:
+
+* `significant_genes.txt` - list of significant genes
+* `vienn.png` - Vienn diagram of genes determined as significant for different analysis
+* `heatmap.png` - plot of differential expression of significant genes
+* `pca.png` - PCA plot of significant genes
+* `ma.png` - MA plot of significant genes
+* `volcano.png` - Volcano plot of significant genes
