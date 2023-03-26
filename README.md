@@ -2,6 +2,17 @@
 The script is designed to pick out sugnificant genes for differntial expression analysis.
 It uses DEseq2 and edgeR to determine the most signifficant genes.
 
+## Quick Start
+```
+Rscript best_of_us.R --count_table=[path to counts table] --metadata=[path to metadata] --output=[path to output folder]
+```
+
+Example:
+
+```
+Rscript best_of_us.R --count_table=example/counts.txt --metadata=example/metadata.csv --output=example/output
+```
+
 ## Input
 
 ### Counts Table
