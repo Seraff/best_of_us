@@ -28,10 +28,9 @@ The structure of the table should be like this:
 | ------- | --- | ----- | --- | ------ | ---------------------- | ----------------------
 | ------- | --- | ----- | --- | ------ | ---------------------- | ----------------------
 
-Please, prepare your table to this format.
 
-The most important columns which should be there are `Geneid` and "bam" columns with coverage.
-If you don't have `Chr`, `Start`, etc additional columns, add empty ones instead.
+The most important columns which must be in the table are `Geneid` and "bam" columns with coverage.
+If you don't have `Chr`, `Start`, etc. additional columns, add empty ones instead.
 
 ### Metadata
 
@@ -43,15 +42,15 @@ The structure of the table should be in the follwing format:
 | - | -  | - | - | - | -
 | state | anaerobic | anaerobic  | aerobic  | aerobic | ...
 
-The name of row `state` is important. If your metadata table has a different name, rename it.
+The name of row `state` is important. If this row in your metadata table has a different name, rename it.
 
 ## Output
 
 In the outpu folder there will be the following fies:
 
 * `significant_genes.txt` - list of significant genes
-* `vienn.png` - Vienn diagram of genes determined as significant for different analysis
+* `vienn.png` - vienn diagram of genes determined as significant for different analysis
 * `heatmap.png` - plot of differential expression of significant genes
 * `pca.png` - PCA plot of significant genes
 * `ma.png` - MA plot of significant genes
-* `volcano.png` - Volcano plot of significant genes
+* `volcano.png` - volcano plot of significant genes
