@@ -31,7 +31,7 @@ The structure of the table should be in the follwing format:
 | - | -  | - | - | - | -
 | state | anaerobic | anaerobic  | aerobic  | aerobic | ...
 
-The name of row `state` is important. If you metadata table has a different name, rename it.
+The name of row `state` is important. If your metadata table has a different name, rename it.
 
 ## Output
 
