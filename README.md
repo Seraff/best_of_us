@@ -2,7 +2,7 @@
 The script is designed to pick out sugnificant genes for differntial expression analysis.
 It uses DEseq2 and edgeR to determine the most signifficant genes.
 
-## Inputs
+## Input
 
 ### Counts Table
 
