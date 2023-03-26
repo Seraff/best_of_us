@@ -12,6 +12,7 @@ library(VennDiagram)
 library(pheatmap)
 library(ggplot2)
 library(argparse)
+library(glue)
 
 output_path_for <- function (filename) {
   return(file.path(args$output, filename))
@@ -55,6 +56,9 @@ count_data <- as.matrix(count_data)
 
 # Reading metadata
 metadata <- read.csv(args$metadata, row.names = 1)
+
+# Creating the output folder if it doesn't exist
+system(glue("mkdir -p {args$output}"))
 
 ## DESeq2 analysis ##
 metadata_deseq <- metadata[,1:ncol(metadata)]

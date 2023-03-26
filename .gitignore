@@ -1,3 +1,9 @@
+# MacOS things
+.DS_Store
+
+# Visual Studio things
+.history
+
 # History files
 .Rhistory
 .Rapp.history
@@ -37,3 +43,6 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Project specific
+example/output
