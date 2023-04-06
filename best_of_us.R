@@ -11,6 +11,7 @@ library(edgeR)
 library(VennDiagram)
 library(pheatmap)
 library(ggplot2)
+library(ggrepel)
 library(argparse)
 library(glue)
 
@@ -35,12 +36,9 @@ parse_arguments <- function () {
 args <- c()
 
 if (Sys.getenv("RSTUDIO") == "1") {
-  library(rstudioapi)
-  my_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-  
-  args$count_table = file.path(my_dir, "data/results/counts.txt")
-  args$metadata = file.path(my_dir, "data/results/metadata.csv")
-  args$output = file.path(my_dir, "data/results/plots")
+  args$count_table = file.path("results/plots_an_am_fl/counts.txt")
+  args$metadata = file.path("results/plots_an_am_fl/metadata.csv")
+  args$output = file.path("results/tmp")
   args$padj_cutoff = 0.05
 } else {
   args <- parse_arguments()
@@ -63,10 +61,10 @@ system(glue("mkdir -p {args$output}"))
 ## DESeq2 analysis ##
 metadata_deseq <- metadata[,1:ncol(metadata)]
 metadata_deseq = t(metadata_deseq)
-deseq_data <- DESeqDataSetFromMatrix(countData = count_data,
-                                     colData = metadata_deseq,
+deseq_dds <- DESeqDataSetFromMatrix(countData = count_data,
+                                     colData = as.data.frame(metadata_deseq),
                                      design = ~ state)
-deseq_data <- DESeq(deseq_data)
+deseq_data <- DESeq(deseq_dds)
 result_deseq2 <- results(deseq_data)
 
 ## edgeR analysis ##
@@ -100,13 +98,13 @@ venn.plot <- venn.diagram(venn_data, filename = output_path_for("vienn.png"),
 counts_intersect <- count_data[intersect_genes, ]
 log_counts_intersect <- log2(counts_intersect + 1)
 
-pheatmap(log_counts_intersect, 
-         scale = "row", 
-         cluster_rows = TRUE, 
-         cluster_cols = TRUE, 
+pheatmap(log_counts_intersect,
+         scale = "row",
+         cluster_rows = TRUE,
+         cluster_cols = TRUE,
          show_rownames = FALSE,
          show_colnames = TRUE,
-         annotation_col = metadata$state,
+         annotation = as.data.frame(t(metadata)),
          filename = output_path_for("heatmap.png"))
 
 # PCA plot
@@ -116,12 +114,14 @@ pca_df <- data.frame(PC1 = pca_result$x[, 1],
                      PC2 = pca_result$x[, 2],
                      Condition = t(metadata))
 
+
 pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = state)) +
             geom_point(size = 4) +
             theme_bw() +
             xlab("PC1") +
             ylab("PC2") +
-            ggtitle("PCA Plot of Overlapped DEGs")
+            ggtitle("PCA Plot of Overlapped DEGs") +
+            geom_text_repel(aes(label = rownames(pca_df)), size = 3, point.padding = 3)
 
 ggsave(output_path_for("pca.png"), plot = pca_plot)
 
@@ -156,3 +156,37 @@ write.table(intersect_genes, output_path_for("significant_genes.txt"),
           quote=FALSE,
           row.names=FALSE,
           col.names=FALSE, na='')
+
+# deseq2 stats on intersected genes
+deseq2_stats <- result_deseq2[row.names(result_deseq2) %in% t(intersect_genes),]
+write.csv(deseq2_stats, output_path_for("sugnificant_deseq2.csv"),
+          quote=FALSE, na="", row.names=FALSE)
+
+
+# Pairwise compare
+
+metadata <- as.data.frame(t(metadata))
+
+# Get list of all unique groups
+all_groups <- unique(metadata$state)
+
+# Perform pairwise comparison of groups
+comparisons <- combn(all_groups, 2, simplify = FALSE)
+
+for (comparison in comparisons) {
+  # Create results table
+  res <- results(deseq_data, contrast = c("state", comparison[1], comparison[2]))
+
+  # Add gene names to results table
+  res$gene_name <- rownames(res)
+
+  # Select columns for output
+  output <- res[,c("gene_name","log2FoldChange")]
+
+  # Write results to file
+  filename <- paste0(comparison[1],"_vs_",comparison[2],"_comparison.txt")
+  write.table(output, file = output_path_for(filename),
+                      row.names = FALSE,
+                      sep = "\t",
+                      quote=FALSE)
+}
